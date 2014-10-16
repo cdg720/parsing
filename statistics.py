@@ -1,5 +1,5 @@
 from bllipparser import Tree
-from numpy import mean
+from numpy import mean, median
 from subprocess import Popen, PIPE, call
 import gzip
 import sys
@@ -15,7 +15,19 @@ def compute_dist(gold, trees):
 				argmax = i
 				score = x
 		dist[argmax] += 1
-	return [xx / len(trees) for x in dist]
+	return [x / len(trees) for x in dist]
+
+def create_separate_files(trees, gold):
+	ind = 0
+	# for ts, g in zip(trees, gold):
+	# 	ind += 1
+	# 	f = gzip.open('/home/dc65/Documents/research/self-training/code/tmp/dev/' + str(ind) + '/pred.gz', 'wb')
+	# 	h = gzip.open('/home/dc65/Documents/research/self-training/code/tmp/dev/' + str(ind) + '/gold.gz', 'wb')
+	# 	for t in ts:
+	# 		f.write(str(t) + '\n')
+	# 		h.write(str(g) + '\n')
+	# 	f.close()
+	# 	h.close()
 
 def evaluate(sent1, sent2): # sent1: gold?
 	score = 0
@@ -50,9 +62,9 @@ def read_gold(path):
 
 def read_nbest(path):
 	if path.endswith('.gz'):
-		f = gzip.open(sys.argv[1], 'rb')
+		f = gzip.open(path, 'rb')
 	else:
-		f = open(sys.argv[1], 'r')
+		f = open(path, 'r')
 	tmp = f.read().splitlines()
 	x = tmp[::2]
 	y = tmp[1::2]
@@ -80,13 +92,26 @@ def main():
 	if len(sys.argv) != 3:
 		print 'usage: python statistics.py 50best gold'
 		sys.exit(0)
-	a = "(S1 (SINV (S-TPC-1 (`` ``) (NP-SBJ (EX There)) (VP (VBZ 's) (NP-PRD (NP (DT a) (NN possibility)) (PP (IN of) (NP (NP (DT a) (NN surprise)) ('' '') (PP-LOC (IN in) (NP (DT the) (NN trade) (NN report)))))))) (, ,) (VP (VBD said)) (NP-SBJ (NP (NNP Michael) (NNP Englund)) (, ,) (NP (NP (NN director)) (PP (IN of) (NP (NN research))) (PP (IN at) (NP (NNP MMS))))) (. .)))"
-	b = "(S1 (SINV (`` `) (S (`` `) (NP (EX There)) (VP (AUX 's) (NP (NP (DT a) (NN possibility)) (PP (IN of) (NP (NP (DT a) (NN surprise) (POS ')) ('' ') (PP (IN in) (NP (DT the) (NN trade) (NN report)))))))) (, ,) (VP (VBD said)) (NP (NP (NNP Michael) (NNP Englund)) (, ,) (NP (NP (NN director)) (PP (IN of) (NP (NN research))) (PP (IN at) (NP (NNP MMS))))) (. .)))"
-	print evaluate(a, b)
 
-	# trees, scores = read_nbest(sys.argv[1])
-	# gold = read_gold(sys.argv[2])
+	trees, scores = read_nbest(sys.argv[1])
+	gold = read_gold(sys.argv[2])
 
+	# create_separate_files(trees, gold)
+	# best_scores = []
+	# bins = [0,] * 10	
+	# for score in scores:
+	# 	best_scores.append(score[0])
+	# 	bins[int(score[0] * 10)] += 1
+
+	#print best_scores
+	# print mean(best_scores)
+	# print sum(best_scores)
+	# print median(best_scores)
+	# print max(best_scores)
+	# print min(best_scores)
+	# x = [float(x) / len(best_scores) for x in bins]
+	# print '\t'.join([str(xx * 10) + '-' + str((xx+1) * 10) for xx in xrange(10)])
+	# print '\t'.join(['%.4f' for xx in xrange(10)]) % (tuple(x))
 	# empirical_dist = compute_dist(gold, trees)
 	# print 'empirical distribution:'
 	# print empirical_dist
@@ -98,8 +123,7 @@ def main():
 	# predicted_dist = [mean(xx) for xx in x]
 	# print 'rerakning parser distribution:'
 	# print predicted_dist
-
 	
-main()
+#main()
 
 	

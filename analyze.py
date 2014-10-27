@@ -44,7 +44,7 @@ def read():
 	print 'median:', np.median(scores)
 	print 'max:', np.max(scores)
 	print 'min:', np.min(scores)
-	top = 50
+	top = 25
 	print ' '.join([str(int(x[1])) for x in tmp[-top:]])
 	print 'top %d mean:' % top, np.mean(scores[-top])
 
